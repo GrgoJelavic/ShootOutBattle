@@ -29,10 +29,10 @@ const keys = {
     ArrowRight: false,
     ArrowUp: false,
     ArrowDown: false,
-    A: false,
-    D: false,
-    W: false,
-    S: false,
+    a: false,
+    d: false,
+    w: false,
+    s: false,
 }
 
 document.addEventListener('keydown', (e) => {
@@ -40,6 +40,7 @@ document.addEventListener('keydown', (e) => {
     if (e.key in keys) {
         keys[e.key] = true;
     }
+
     if (e.code == 'ShiftRight') {
         players[0].cooldown = 20;
         game.bullets.push({
@@ -66,7 +67,7 @@ document.addEventListener('keyup', (e) => {
     if (e.key in keys) {
         keys[e.key] = false;
     }
-    if (e.code == 'KeyM') {
+    if (e.key == 'm') { //temporary 
         console.log(players[0].x, players[0].y)
         console.log(players[1].x, players[1].y)
         collisionDetec(players[0], players[1]);
@@ -75,8 +76,12 @@ document.addEventListener('keyup', (e) => {
 
 game.req = requestAnimationFrame(draw);
 
-function collisionDetec(a, b) {
-    let bools = a.x < b.x + b.size;
+function collisionDetec(play, bull) {
+    //let boolHoriz = a.x < b.x + b.size && a.x + a.size * 2 > b.x;
+    //let boolVertic = a.y < b.y + b.size && a.y + a.size * 2 > b.y;
+    //let bools = a.x < b.x + b.size && a.x + a.size * 2 > b.x && a.y < b.y + b.size && a.y + a.size * 2 > b.y;
+    //console.log(a.x, (b.x + b.size * 2));
+    return play.x < bull.x + bull.size && play.x + play.size * 2 > bull.x && play.y < bull.y + bull.size * 2 && play.y + play.size * 2 > bull.y;
 }
 
 function movementPlayer() {
@@ -95,16 +100,16 @@ function movementPlayer() {
     if (keys['ArrowDown'] && players[0].y < canvas.height - players[0].size) {
         players[0].y += players[0].speed;
     };
-    if (keys['A'] && players[1].x > players[1].size) {
-        players[1].x -= players[1].speed
+    if (keys['a'] && players[1].x > players[1].size) {
+        players[1].x -= players[1].speed;
     }
-    if (keys['D'] && players[1].x < canvas.width / 2 - players[1].size) {
+    if (keys['d'] && players[1].x < canvas.width / 2 - players[1].size) {
         players[1].x += players[1].speed;
     }
-    if (keys['W'] && players[1].y > players[1].size) {
+    if (keys['w'] && players[1].y > players[1].size) {
         players[1].y -= players[1].speed;
     }
-    if (keys['S'] && players[1].y < canvas.height - players[1].size) {
+    if (keys['s'] && players[1].y < canvas.height - players[1].size) {
         players[1].y += players[1].speed;
     };
 }
@@ -119,8 +124,14 @@ function draw() {
         context.fillRect(bullet.x, bullet.y, bullet.size, bullet.size)
         bullet.x += bullet.speed;
         if (bullet.x < 0) {
-            game.bullets.splice(index, 1);
+            // game.bullets.splice(index, 1);
         }
+        players.forEach((player, index2) => {
+            if (collisionDetec(bullet, player)) {
+                console.log('HIT' + player.color + ' ' + index2);
+                game.bullets.splice(index, 1);
+            }
+        })
     })
 
     context.beginPath();
